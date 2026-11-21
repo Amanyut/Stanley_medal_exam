@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MMR 55 STANLEAN MEDAL EXAM — Interactive Quiz</title>
+  <!-- Load Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Load Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- Sticky Exam Header -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Exam Title & Marking Scheme -->
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-indigo-900 text-white flex items-center justify-center font-extrabold text-sm tracking-tight shrink-0 shadow-sm">
+            55
+          </div>
+          <div class="min-w-0">
+            <h1 class="text-sm sm:text-base font-extrabold text-indigo-950 tracking-tight truncate">
+              MMR 55 STANLEAN MEDAL EXAM
+            </h1>
+            <p class="text-xs text-slate-500 font-medium truncate">
+              60 MCQs &bull; +3 Correct &bull; &minus;1 Wrong &bull; Max 180
+            </p>
+          </div>
+        </div>
+
+        <!-- Header Controls (Hidden on Results Screen where not needed) -->
+        <div id="quizHeaderControls" class="flex items-center flex-wrap gap-2">
+          <!-- Optional Live Score Toggle -->
+          <button
+            id="toggleLiveScoreBtn"
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors"
+            title="Show or hide live running score"
+          >
+            <svg id="eyeIcon" class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <span id="liveScoreLabel">Score: Hidden</span>
+          </button>
+
+          <!-- Optional 60-Min Timer Control -->
+          <div class="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
+            <button
+              id="toggleTimerVisibilityBtn"
+              type="button"
+              class="px-2.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-1.5"
+              title="Toggle 60-minute exam timer"
+            >
+              <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span id="timerDisplay" class="tabular-nums font-bold text-slate-800">60:00</span>
+            </button>
+            <button
+              id="timerPlayPauseBtn"
+              type="button"
+              class="px-2.5 py-2 text-xs font-semibold border-l border-slate-200 text-indigo-700 hover:bg-indigo-50 transition-colors"
+              title="Start or pause timer"
+            >
+              Start
+            </button>
+          </div>
+
+          <!-- Collapsible Question Palette Toggle -->
+          <button
+            id="togglePaletteBtn"
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 transition-colors"
+          >
+            <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+            <span>Palette</span>
+          </button>
+
+          <!-- Submit Quiz Button -->
+          <button
+            id="headerSubmitBtn"
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-900 text-white hover:bg-indigo-800 shadow-sm transition-colors"
+          >
+            Submit Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thin Top Progress Bar -->
+    <div id="topProgressContainer" class="w-full h-1.5 bg-slate-100">
+      <div id="topProgressBar" class="h-full bg-indigo-600 transition-all duration-300 ease-out" style="width: 1.67%;"></div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- ==================== QUIZ VIEW ==================== -->
+    <section id="quizView" class="space-y-5">
+
+      <!-- Collapsible Question Navigator Palette -->
+      <div id="paletteDrawer" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 transition-all">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Question Navigator (1–60)</h2>
+            <p class="text-xs text-slate-500">Jump to any question to answer skipped items or review locked responses.</p>
+          </div>
+          <button
+            id="closePaletteBtn"
+            type="button"
+            class="text-xs font-semibold text-slate-500 hover:text-slate-800 px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600 mb-4 pb-3 border-b border-slate-100">
+          <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Correct</span>
+          <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500 inline-block"></span> Wrong</span>
+          <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-100 border border-amber-400 inline-block"></span> Skipped</span>
+          <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-100 border border-slate-300 inline-block"></span> Unvisited</span>
+          <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded ring-2 ring-indigo-600 bg-white inline-block"></span> Current</span>
+        </div>
+
+        <!-- 60-Question Grid -->
+        <div id="paletteGrid" class="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-12 gap-2"></div>
+      </div>
+
+      <!-- Progress Status Row -->
+      <div class="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+        <div class="flex items-center gap-2.5">
+          <span id="questionCounterBadge" class="inline-flex items-center px-3 py-1 rounded-full font-bold bg-indigo-50 text-indigo-800 border border-indigo-100">
+            Question 1 of 60
+          </span>
+          <span id="questionStatusBadge" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+            Unanswered
+          </span>
+        </div>
+        <div class="text-xs text-slate-500 font-medium flex items-center gap-3">
+          <span id="attemptedCounterText">0 / 60 Answered</span>
+          <span class="hidden sm:inline text-slate-300">|</span>
+          <span class="hidden sm:inline text-slate-400">Keys: A–D answer &bull; &rarr; next</span>
+        </div>
+      </div>
+
+      <!-- Active Question Card -->
+      <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-5 sm:p-7">
+          <!-- Verbatim Question Stem -->
+          <div class="flex items-start gap-3 mb-6">
+            <span id="questionNumCircle" class="shrink-0 w-8 h-8 rounded-xl bg-indigo-950 text-white text-sm font-bold flex items-center justify-center mt-0.5">
+              1
+            </span>
+            <h2 id="questionText" class="text-base sm:text-lg font-semibold text-slate-900 leading-relaxed">
+              <!-- Populated by JS -->
+            </h2>
+          </div>
+
+          <!-- Four Verbatim Options (A, B, C, D) -->
+          <div id="optionsContainer" class="space-y-3" role="radiogroup" aria-label="Answer options">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Immediate Feedback & Explanation Box -->
+          <div id="feedbackBox" class="hidden mt-6 rounded-2xl p-4 sm:p-5 border transition-all">
+            <div class="flex items-start gap-3">
+              <div id="feedbackIcon" class="shrink-0 mt-0.5"></div>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h3 id="feedbackTitle" class="text-sm sm:text-base font-bold"></h3>
+                  <span id="feedbackMarksPill" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold"></span>
+                </div>
+                <p id="feedbackKeyLine" class="text-xs sm:text-sm font-medium mt-1"></p>
+                <div id="feedbackExplanationWrapper" class="hidden mt-3 pt-3 border-t text-xs sm:text-sm leading-relaxed">
+                  <span class="font-bold uppercase tracking-wider text-[11px] block mb-1 opacity-75">Official Key Note</span>
+                  <p id="feedbackExplanationText"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Card Footer Navigation -->
+        <div class="bg-slate-50 border-t border-slate-200 px-5 sm:px-7 py-4 flex flex-wrap items-center justify-between gap-3">
+          <button
+            id="prevBtn"
+            type="button"
+            class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Previous
+          </button>
+
+          <div class="flex items-center gap-2.5">
+            <button
+              id="skipBtn"
+              type="button"
+              class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors"
+            >
+              Skip (0)
+            </button>
+
+            <button
+              id="nextBtn"
+              type="button"
+              class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-900 text-white hover:bg-indigo-800 shadow-sm transition-colors"
+            >
+              <span id="nextBtnText">Next Question</span>
+              <svg id="nextBtnIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ==================== RESULTS VIEW ==================== -->
+    <section id="resultsView" class="hidden space-y-6">
+
+      <!-- Final Score Hero Card -->
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="bg-gradient-to-br from-indigo-950 via-indigo-900 to-slate-900 text-white p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/15 text-indigo-100 tracking-wide uppercase mb-3">
+                Official Score Report
+              </span>
+              <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                MMR 55 STANLEAN MEDAL EXAM
+              </h2>
+              <p id="resultsSubtitle" class="text-sm text-indigo-200 mt-1.5">
+                Automatic calculation based on strict answer key (+3 Correct, &minus;1 Wrong, 0 Skipped).
+              </p>
+            </div>
+
+            <!-- Big Score Box -->
+            <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-6 py-4 text-center sm:min-w-[190px]">
+              <div class="text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-1">Final Score</div>
+              <div class="flex items-baseline justify-center gap-1.5">
+                <span id="resFinalScore" class="text-4xl sm:text-5xl font-extrabold tabular-nums">0</span>
+                <span class="text-lg font-semibold text-indigo-200">/ 180</span>
+              </div>
+              <div id="resOverallPct" class="text-xs font-semibold text-indigo-100 mt-1">0.0% Overall</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Score Split-Up Grid & Breakdown Bar -->
+        <div class="p-6 sm:p-8 space-y-6">
+          <!-- Stacked Visual Breakdown Bar -->
+          <div>
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-600 mb-2">
+              <span>Performance Split (60 Questions)</span>
+              <span id="resTimeElapsed" class="text-slate-500"></span>
+            </div>
+            <div class="w-full h-4 rounded-full bg-slate-200 overflow-hidden flex shadow-inner">
+              <div id="barCorrect" class="h-full bg-emerald-500 transition-all duration-500" style="width: 0%;"></div>
+              <div id="barWrong" class="h-full bg-rose-500 transition-all duration-500" style="width: 0%;"></div>
+              <div id="barSkipped" class="h-full bg-slate-300 transition-all duration-500" style="width: 100%;"></div>
+            </div>
+            <div class="flex flex-wrap items-center gap-4 text-xs text-slate-600 mt-2.5">
+              <span class="inline-flex items-center gap-1.5 font-medium"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Correct</span>
+              <span class="inline-flex items-center gap-1.5 font-medium"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Wrong</span>
+              <span class="inline-flex items-center gap-1.5 font-medium"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> Skipped / Unattempted</span>
+            </div>
+          </div>
+
+          <!-- 4 Stat Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- Correct -->
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
+              <div class="text-xs font-bold uppercase tracking-wider text-emerald-700">Correct</div>
+              <div id="resCorrectCount" class="text-2xl sm:text-3xl font-extrabold text-emerald-900 mt-1 tabular-nums">0</div>
+              <div id="resCorrectMarks" class="text-xs font-bold text-emerald-700 mt-1">+0 marks</div>
+            </div>
+
+            <!-- Wrong -->
+            <div class="rounded-2xl border border-rose-200 bg-rose-50/70 p-4">
+              <div class="text-xs font-bold uppercase tracking-wider text-rose-700">Wrong</div>
+              <div id="resWrongCount" class="text-2xl sm:text-3xl font-extrabold text-rose-900 mt-1 tabular-nums">0</div>
+              <div id="resWrongMarks" class="text-xs font-bold text-rose-700 mt-1">0 marks</div>
+            </div>
+
+            <!-- Skipped -->
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-600">Skipped / Unattempted</div>
+              <div id="resSkippedCount" class="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1 tabular-nums">0</div>
+              <div class="text-xs font-bold text-slate-500 mt-1">0 marks</div>
+            </div>
+
+            <!-- Accuracy -->
+            <div class="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4">
+              <div class="text-xs font-bold uppercase tracking-wider text-indigo-700">Accuracy</div>
+              <div id="resAccuracyPct" class="text-2xl sm:text-3xl font-extrabold text-indigo-950 mt-1 tabular-nums">0%</div>
+              <div id="resAttemptedLabel" class="text-xs font-semibold text-indigo-700 mt-1">0 attempted</div>
+            </div>
+          </div>
+
+          <!-- Formula Summary & Retake Action -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100">
+            <div id="resFormulaSummary" class="text-xs sm:text-sm font-medium text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5">
+              <!-- Populated by JS -->
+            </div>
+            <button
+              id="retakeExamBtn"
+              type="button"
+              class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold bg-indigo-900 text-white hover:bg-indigo-800 shadow-sm transition-colors shrink-0"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Retake Exam
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Review Section with Filters -->
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h3 class="text-lg font-extrabold text-slate-900">Detailed Question Review</h3>
+          <div id="reviewFilterTabs" class="inline-flex flex-wrap items-center gap-1.5 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div id="reviewListContainer" class="space-y-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Custom Confirmation / Alert Modal (No browser alert() or confirm()) -->
+  <div id="modalOverlay" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 animate-fade-in">
+      <div class="flex items-start gap-3.5">
+        <div id="modalIconContainer" class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 id="modalTitle" class="text-base font-bold text-slate-900">Submit Quiz?</h3>
+          <p id="modalMessage" class="text-sm text-slate-600 mt-1.5 leading-relaxed"></p>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-2.5">
+        <button
+          id="modalCancelBtn"
+          type="button"
+          class="px-4 py-2.5 rounded-xl text-sm font-semibold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-colors"
+        >
+          Continue Quiz
+        </button>
+        <button
+          id="modalConfirmBtn"
+          type="button"
+          class="px-4 py-2.5 rounded-xl text-sm font-bold bg-indigo-900 text-white hover:bg-indigo-800 shadow-sm transition-colors"
+        >
+          Submit &amp; View Score
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Script -->
+  <script>
+    (function () {
+      'use strict';
+
+      // =========================================================================
+      // COMPLETE VERBATIM DATASET — ALL 60 QUESTIONS & STRICT ANSWER KEY
+      // =========================================================================
+      const QUESTIONS = [
+        {
+          id: 1,
+          q: "A Class III mandibular fracture (Kazanjian and Converse classification) means:",
+          options: {
+            A: "Fracture having teeth on both sides of the fracture segment",
+            B: "Horizontally favorable fracture",
+            C: "Vertically unfavorable fracture",
+            D: "Fracture of the mandible with no teeth on either side"
+          },
+          key: "D",
+          explanation: "Kazanjian & Converse Class III mandibular fracture indicates an edentulous mandible with no serviceable teeth on either side of the fracture line."
+        },
+        {
+          id: 2,
+          q: "In whom is Intermaxillary Fixation (IMF) by screw contraindicated?",
+          options: {
+            A: "Primary or mixed dentition",
+            B: "Adults",
+            C: "Old age",
+            D: "None of the above"
+          },
+          key: "A",
+          explanation: "IMF screws are contraindicated in primary or mixed dentition due to the high risk of damaging unerupted permanent tooth buds and dental roots."
+        },
+        {
+          id: 3,
+          q: "What is the standard management using the Champy technique for a mandibular angle fracture?",
+          options: {
+            A: "Plate with screw fixation on the lateral aspect",
+            B: "Plate and screw fixation over the internal oblique ridge",
+            C: "Plate and screw fixation over the external oblique ridge",
+            D: "Proximal portion of plate adapted over the internal oblique ridge and distal portion over the external oblique ridge"
+          },
+          key: "D",
+          explanation: ""
+        },
+        {
+          id: 4,
+          q: "An edentulous mandible is classified according to bone height. Severe atrophy means:",
+          options: {
+            A: "Less than 1 cm height",
+            B: "Less than 2 cm height",
+            C: "Less than 1.5 cm height",
+            D: "Less than 2.5 cm height"
+          },
+          key: "A",
+          explanation: "Luhr Class III (severe atrophy) of an edentulous mandible is defined by a vertical bone height of <= 10 mm (less than 1 cm)."
+        },
+        {
+          id: 5,
+          q: "In a pediatric orbital trapdoor fracture, within how much time must the entrapped muscle be released to prevent irreversible muscle ischemia?",
+          options: {
+            A: "24 hours",
+            B: "1 week",
+            C: "8 hours",
+            D: "3 days"
+          },
+          key: "C",
+          explanation: "Urgent surgical release within 8 hours (up to 24 hours max) prevents Volkmann-like ischemic contracture of the entrapped inferior rectus in pediatric trapdoor fractures."
+        },
+        {
+          id: 6,
+          q: "What is the percentage of acute vision loss in facial injuries?",
+          options: {
+            A: "5%",
+            B: "10%",
+            C: "1–2%",
+            D: "3%"
+          },
+          key: "C",
+          explanation: "Acute vision loss occurs in roughly 1–2% of midfacial/orbital trauma cases."
+        },
+        {
+          id: 7,
+          q: "Regarding infraorbital nerve dysfunction in an orbital floor fracture, which of the following statements is true?",
+          options: {
+            A: "Infraorbital nerve dysfunction may never completely resolve",
+            B: "Infraorbital nerve may take up to 18 months to improve",
+            C: "Infraorbital nerve always recovers completely",
+            D: "Both A and B are correct"
+          },
+          key: "D",
+          explanation: "Infraorbital nerve (V2) paresthesia may take up to 18 months to improve, and severe nerve traction/transection may never completely resolve."
+        },
+        {
+          id: 8,
+          q: "Which of the plastic surgeons are considered part of the ‘perforator 4’?",
+          options: {
+            A: "Kawamoto",
+            B: "Blondeel",
+            C: "Rod J Rohrich",
+            D: "JP Hong"
+          },
+          key: "B",
+          explanation: ""
+        },
+        {
+          id: 9,
+          q: "Who classified the ear according to size, shape, position, and anatomical components?",
+          options: {
+            A: "Hunter",
+            B: "Gillies",
+            C: "Tanzer",
+            D: "Firmin"
+          },
+          key: "A",
+          explanation: ""
+        },
+        {
+          id: 10,
+          q: "Who performed single-stage autologous microtia reconstruction?",
+          options: {
+            A: "Fisher and Kasrai",
+            B: "Nagata",
+            C: "Firmin",
+            D: "Hunter"
+          },
+          key: "A",
+          explanation: "Fisher and Kasrai modified the Nagata costal cartilage framework to perform single-stage autologous microtia reconstruction."
+        },
+        {
+          id: 11,
+          q: "Gynecomastia due to which of the following causes is most prone to developing breast cancer?",
+          options: {
+            A: "Kallmann syndrome",
+            B: "Klinefelter syndrome",
+            C: "Drug-induced etiology",
+            D: "Adrenocortical cancer"
+          },
+          key: "B",
+          explanation: "Klinefelter syndrome (47,XXY) carries an approximately 20-fold increased risk of male breast cancer."
+        },
+        {
+          id: 12,
+          q: "Who popularized the use of porous polyethylene framework (PPF / Medpor) for microtia reconstruction?",
+          options: {
+            A: "John Reinisch",
+            B: "Hunter",
+            C: "Fisher",
+            D: "Musgrave"
+          },
+          key: "A",
+          explanation: "Dr. John Reinisch popularized porous polyethylene (Medpor/PPF) frameworks covered by a temporoparietal fascial flap for microtia."
+        },
+        {
+          id: 13,
+          q: "At room temperature, what is the normal volume of blood flowing through the skin?",
+          options: {
+            A: "0.25 L/m² TBSA",
+            B: "0.50 L/m² TBSA",
+            C: "0.40 L/m² TBSA",
+            D: "0.75 L/m² TBSA"
+          },
+          key: "A",
+          explanation: "Normal resting cutaneous blood flow at room temperature is approximately 0.25 L/min/m² TBSA."
+        },
+        {
+          id: 14,
+          q: "A bilobed flap is a type of:",
+          options: {
+            A: "Rotation flap",
+            B: "Transposition flap",
+            C: "Interpolated flap",
+            D: "Island flap"
+          },
+          key: "B",
+          explanation: "The bilobed flap is a double transposition flap."
+        },
+        {
+          id: 15,
+          q: "Which of the following types of BCC is known for recurrence?",
+          options: {
+            A: "Nodular",
+            B: "Ulcerative",
+            C: "Sclerosing",
+            D: "Pigmented"
+          },
+          key: "C",
+          explanation: "sclerosing / Morpheaform BCC has a high recurrence risk because of subclinical infiltration and poorly defined tumour margins."
+        },
+        {
+          id: 16,
+          q: "The miter flap is another name for which of the following?",
+          options: {
+            A: "Dorsal nasal flap",
+            B: "Nasolabial flap",
+            C: "Glabellar flap",
+            D: "Bilobed flap"
+          },
+          key: "A",
+          explanation: "Gillies described the dorsal nasal flap as the 'bishop's miter' flap."
+        },
+        {
+          id: 17,
+          q: "What is the approximate percentage of squamous cell carcinoma among oral cavity malignancies?",
+          options: {
+            A: "86%",
+            B: "70%",
+            C: "80%",
+            D: "75%"
+          },
+          key: "A",
+          explanation: "Squamous cell carcinoma comprises ~86% of oral cavity malignancies."
+        },
+        {
+          id: 18,
+          q: "What is the flap of choice for total or subtotal tongue reconstruction to provide adequate bulk and mobility?",
+          options: {
+            A: "Anterolateral thigh (ALT) flap",
+            B: "TRAM flap",
+            C: "VRAM flap",
+            D: "Radial forearm flap"
+          },
+          key: "A",
+          explanation: "The anterolateral thigh (ALT) flap provides reliable soft tissue bulk and pliability for subtotal/total glossectomy defects."
+        },
+        {
+          id: 19,
+          q: "In Cheng's classification of tongue defects, what is the flap of choice for a Type I defect?",
+          options: {
+            A: "Radial forearm flap",
+            B: "ALT flap",
+            C: "Medial sural artery perforator (MSAP) flap",
+            D: "TRAM flap"
+          },
+          key: "A",
+          explanation: "Cheng Type I tongue defects (<= 50% / hemiglossectomy) are best reconstructed with a thin, pliable radial forearm free flap."
+        },
+        {
+          id: 20,
+          q: "Who first classified burns into three categories (degrees)?",
+          options: {
+            A: "Harold Gillies",
+            B: "Fabricius Hildanus",
+            C: "Richter",
+            D: "Tappeiner"
+          },
+          key: "B",
+          explanation: "Wilhelm Fabricius Hildanus first classified burns into three degrees in 1610."
+        },
+        {
+          id: 21,
+          q: "Who introduced the Parkland formula for burn fluid resuscitation?",
+          options: {
+            A: "Parkland",
+            B: "Charles Baxter",
+            C: "Oliver Cope",
+            D: "Richter"
+          },
+          key: "B",
+          explanation: "Dr. Charles Baxter formulated the Parkland burn resuscitation formula (4 mL x kg x %TBSA)."
+        },
+        {
+          id: 22,
+          q: "What is keraunoparalysis?",
+          options: {
+            A: "Cardiac arrest in electrical injury",
+            B: "Transient central and peripheral nervous system arrest/paralysis in electrical or lightning injury",
+            C: "Paralysis in radiation injury",
+            D: "Cardiac arrest in radiation injury"
+          },
+          key: "B",
+          explanation: "Keraunoparalysis is a transient central and peripheral neurological paralysis and vasospasm following lightning or high-voltage electrical injury."
+        },
+        {
+          id: 23,
+          q: "Which burn resuscitation formula uses 0.9% NaCl at 1 mL/kg/%TBSA (alongside an equal volume of colloid) in the first 24 hours?",
+          options: {
+            A: "Brooke formula",
+            B: "Slater formula",
+            C: "Evans formula",
+            D: "Galveston formula"
+          },
+          key: "C",
+          explanation: "The Evans formula administers 1 mL/kg/%TBSA of 0.9% NaCl plus 1 mL/kg/%TBSA of colloid in the first 24 hours."
+        },
+        {
+          id: 24,
+          q: "Which of the following drugs is used as an adjunct in acute burn patients to reduce fluid resuscitation requirements, maintain urine output, and decrease tissue edema?",
+          options: {
+            A: "Steroids",
+            B: "Vitamin C (Ascorbic acid)",
+            C: "Propranolol",
+            D: "Opioids"
+          },
+          key: "B",
+          explanation: "High-dose intravenous Vitamin C (ascorbic acid) reduces endothelial capillary leak, fluid resuscitation volume, and tissue edema in acute burns."
+        },
+        {
+          id: 25,
+          q: "Which of the following statements is correct regarding alternative/biological burn wound dressings?",
+          options: {
+            A: "Cleaned and boiled large plant leaves (such as banana leaves) can be used as non-adherent burn dressings",
+            B: "The inner cambium layer of certain plants/trees (such as willow) contains salicylates, which help control pain and bacterial/fungal growth",
+            C: "Ideal moist dressings create a microenvironment that mimics the in utero environment of fetal wound healing",
+            D: "All of the above are correct"
+          },
+          key: "D",
+          explanation: "Sterilized banana leaves act as non-adherent dressings, tree cambium provides natural salicylates, and moist dressings mimic the fetal wound environment."
+        },
+        {
+          id: 26,
+          q: "According to the classification of perioral muscles (based on insertion), Group I muscles are those that:",
+          options: {
+            A: "Insert into the modiolus",
+            B: "Insert into the upper lip",
+            C: "Insert into the lower lip",
+            D: "Are located solely within the cheek"
+          },
+          key: "A",
+          explanation: "Perioral Group I muscles insert directly into the modiolus."
+        },
+        {
+          id: 27,
+          q: "What is Riedel's line (Riedel's plane) in facial profile analysis?",
+          options: {
+            A: "A line connecting the tragus to the angle of the mouth",
+            B: "A line connecting the infraorbital margin to the external auditory canal",
+            C: "A tangent line connecting the most prominent points of the upper lip and lower lip that touches the pogonion",
+            D: "A line connecting the tragus to the lateral wall of the orbit"
+          },
+          key: "C",
+          explanation: "Riedel's line connects the most prominent points of the upper and lower lips and touches the soft-tissue pogonion in a balanced profile."
+        },
+        {
+          id: 28,
+          q: "What is a 'witch's chin' deformity (Guyuron Class V chin deformity)?",
+          options: {
+            A: "Soft tissue ptosis of the chin",
+            B: "Pseudomacrogenia",
+            C: "Pseudomicrogenia",
+            D: "A combination of all of the above"
+          },
+          key: "A",
+          explanation: "Guyuron Class V 'witch's chin' deformity represents premental soft tissue ptosis with a deep submental crease."
+        },
+        {
+          id: 29,
+          q: "What are 'smoker's lines' (vertical perioral rhytids)?",
+          options: {
+            A: "Lines that run parallel to the nasolabial crease",
+            B: "Lines that run parallel to the labiomental crease",
+            C: "Static vertical lines in the upper lip caused by chronic contraction of the orbicularis oris",
+            D: "Purely dynamic lines caused by the orbicularis oris"
+          },
+          key: "D",
+          explanation: ""
+        },
+        {
+          id: 30,
+          q: "All of the following are superficial muscles of facial expression EXCEPT:",
+          options: {
+            A: "Zygomaticus major",
+            B: "Buccinator",
+            C: "Depressor anguli oris",
+            D: "Levator labii superioris"
+          },
+          key: "B",
+          explanation: "The buccinator lies in the deepest (4th) layer of facial mimetic muscles, unlike superficial muscles such as zygomaticus major."
+        },
+        {
+          id: 31,
+          q: "Most muscles of the face do not undergo major structural migration/sagging with age EXCEPT:",
+          options: {
+            A: "Orbicularis oculi and platysma",
+            B: "Mentalis",
+            C: "Zygomaticus major",
+            D: "Orbicularis oris"
+          },
+          key: "A",
+          explanation: "The orbicularis oculi and platysma undergo prominent age-related attenuation, laxity, and banding compared to other facial muscles."
+        },
+        {
+          id: 32,
+          q: "In the Moon and Taylor classification of the deep inferior epigastric artery (DIEA) branching pattern, Type I means:",
+          options: {
+            A: "Pattern is a single intramuscular trunk",
+            B: "Inferior epigastric artery branches into three as it travels above the arcuate line",
+            C: "Inferior epigastric artery branches into multiple vessels above the arcuate line",
+            D: "Inferior epigastric artery branches into two at the level of the arcuate line"
+          },
+          key: "A",
+          explanation: "Moon and Taylor Type I DIEA features a single unbranched intramuscular vessel."
+        },
+        {
+          id: 33,
+          q: "Who first described the gracilis muscle flap?",
+          options: {
+            A: "Orticochea",
+            B: "Pickrell",
+            C: "Harii and colleagues",
+            D: "Yousif"
+          },
+          key: "B",
+          explanation: "Pickrell et al. (1952) first described the gracilis muscle transposition flap (Orticochea later described the myocutaneous flap, and Harii the free flap)."
+        },
+        {
+          id: 34,
+          q: "Which of the following flaps are raised based on the gracilis muscle?",
+          options: {
+            A: "Transverse Upper Gracilis (TUG) flap",
+            B: "Transverse Myocutaneous Gracilis (TMG) flap and Bilateral Upper Gracilis (BUG) flap",
+            C: "Diagonal Upper Gracilis (DUG) flap and Vertical Upper Gracilis (VUG) flap",
+            D: "All of the above"
+          },
+          key: "D",
+          explanation: "TUG, TMG, BUG, DUG, and VUG flaps are all skin-paddle variations raised on the gracilis muscle pedicle."
+        },
+        {
+          id: 35,
+          q: "All of the following are relative or absolute contraindications for a DIEP flap EXCEPT:",
+          options: {
+            A: "Existing abdominal hernias",
+            B: "Subcostal scar",
+            C: "Abdominal liposuction",
+            D: "Previous abdominoplasty"
+          },
+          key: "C",
+          explanation: ""
+        },
+        {
+          id: 36,
+          q: "In facial aesthetic proportions of the nose, the distance from the radix to the tip-defining point is equal to the distance from:",
+          options: {
+            A: "Stomion to menton",
+            B: "Stomion to pogonion",
+            C: "Subnasale to menton",
+            D: "Subnasale to pogonion"
+          },
+          key: "A",
+          explanation: "Ideal nasal length (radix to tip-defining point) equals lower facial height (stomion to menton)."
+        },
+        {
+          id: 37,
+          q: "Which of the following is a branch of the supratrochlear artery?",
+          options: {
+            A: "Infratrochlear artery",
+            B: "Angular artery",
+            C: "External nasal artery",
+            D: "Lateral nasal artery"
+          },
+          key: "A",
+          explanation: "The infratrochlear artery arises/anastomoses as a branch associated with the supratrochlear/ophthalmic system around the medial orbit, while angular and lateral nasal arteries arise from the facial artery."
+        },
+        {
+          id: 38,
+          q: "What is a 'parentheses deformity' of the nose?",
+          options: {
+            A: "It is otherwise called a saddle nose deformity",
+            B: "Orientation of the lower lateral cartilage lower border toward the lateral canthus",
+            C: "Orientation of the lower lateral cartilage lower border toward the medial canthus",
+            D: "It is otherwise called a supratip deformity"
+          },
+          key: "C",
+          explanation: "Parenthesis deformity results from cephalic malposition of the lateral crura, angling their caudal borders toward the medial canthus."
+        },
+        {
+          id: 39,
+          q: "Which of the following agents has been shown to reduce nodule size and hardness in early-stage Dupuytren's disease?",
+          options: {
+            A: "Tacrolimus",
+            B: "Bleomycin",
+            C: "Adalimumab",
+            D: "5-Fluorouracil (5-FU)"
+          },
+          key: "C",
+          explanation: "Intranodular adalimumab (anti-TNF) reduces myofibroblast activity, nodule size, and hardness in early Dupuytren's disease."
+        },
+        {
+          id: 40,
+          q: "In the absence of the palmaris longus tendon, which of the following tendons acts as a longitudinal tensor of the palmar fascia?",
+          options: {
+            A: "Flexor digitorum profundus (FDP)",
+            B: "Flexor digitorum superficialis (FDS)",
+            C: "Flexor carpi radialis (FCR)",
+            D: "Flexor carpi ulnaris (FCU)"
+          },
+          key: "D",
+          explanation: "In the absence of palmaris longus, fascial slips from the flexor carpi ulnaris (FCU) help tense the palmar aponeurosis."
+        },
+        {
+          id: 41,
+          q: "What is Stage 2 in the Iselin grading system for Dupuytren's disease?",
+          options: {
+            A: "Skin nodule without contracture",
+            B: "MCP joint contracture",
+            C: "MCP joint and PIP joint contracture",
+            D: "Boutonnière deformity"
+          },
+          key: "B",
+          explanation: "Iselin Stage 2 Dupuytren's disease is characterized by isolated MCP joint contracture."
+        },
+        {
+          id: 42,
+          q: "Clusters of peroneal artery perforators are located at what distance from the lateral malleolus?",
+          options: {
+            A: "4–9 cm",
+            B: "13–18 cm",
+            C: "21–26 cm",
+            D: "All of the above"
+          },
+          key: "D",
+          explanation: "Peroneal artery perforators consistently cluster at three 5-cm intervals above the lateral malleolus: 4–9 cm, 13–18 cm, and 21–26 cm. (page 63)"
+        },
+        {
+          id: 43,
+          q: "For which muscle was a new category (Type VI) proposed in the Mathes-Nahai classification as it does not fit into any of the existing types?",
+          options: {
+            A: "Soleus",
+            B: "Peroneus longus",
+            C: "Peroneus brevis",
+            D: "Plantaris"
+          },
+          key: "C",
+          explanation: "A new Type VI category (characterized by two dominant vascular pedicles entering at opposite ends of the muscle, permitting either proximally or distally based flaps) was proposed for the peroneus brevis muscle. (page 32..)"
+        },
+        {
+          id: 44,
+          q: "What is the vascular basis for the medial femoral condyle corticoperiosteal flap?",
+          options: {
+            A: "Descending genicular artery",
+            B: "Ascending genicular artery",
+            C: "Medial circumflex artery",
+            D: "Perforator from profunda femoris artery"
+          },
+          key: "A",
+          explanation: "The medial femoral condyle corticoperiosteal flap is primarily based on the descending genicular artery (and superomedial genicular artery), originating from the superficial femoral artery."
+        },
+        {
+          id: 45,
+          q: "Which muscle is unique to the human species?",
+          options: {
+            A: "Popliteus",
+            B: "Peroneus tertius",
+            C: "Sartorius",
+            D: "Tensor fascia lata"
+          },
+          key: "B",
+          explanation: "Peroneus tertius (fibularis tertius) is considered unique to humans among primates, assisting in dorsiflexion and eversion during bipedal locomotion. (Page 29)"
+        },
+        {
+          id: 46,
+          q: "Who was awarded the Nobel Prize for his contribution in vascular anastomosis?",
+          options: {
+            A: "Murphy",
+            B: "Alexis Carrel",
+            C: "McLean",
+            D: "Guthrie"
+          },
+          key: "B",
+          explanation: "Alexis Carrel received the 1912 Nobel Prize in Physiology or Medicine for pioneering vascular suture and anastomosis techniques."
+        },
+        {
+          id: 47,
+          q: "Jeweler's forceps tips must be aligned with a precision of:",
+          options: {
+            A: "1/10 inch",
+            B: "1/100 inch",
+            C: "1/1000 inch",
+            D: "1/10,000 inch"
+          },
+          key: "C",
+          explanation: "Microsurgical jeweler's forceps tips require alignment precision to within 1/1000 of an inch (0.025 mm) to handle fine microsutures without slippage."
+        },
+        {
+          id: 48,
+          q: "Irrigation of vessel wall with heparin saline serves the following purposes EXCEPT:",
+          options: {
+            A: "To wash away blood & clots",
+            B: "To improve patency",
+            C: "To prevent anastomotic leak",
+            D: "To prevent sticking of suture to tissue"
+          },
+          key: "C",
+          explanation: "Heparinized saline flushes intraluminal blood/clots, improves patency by inhibiting local thrombus formation, and keeps sutures moist to prevent sticking; it does not prevent mechanical anastomotic leaks."
+        },
+        {
+          id: 49,
+          q: "which suture material is used for anastomosis of vessels with wall thickness of 1 to 2mm?",
+          options: {
+            A: "9-0 nylon",
+            B: "10-0 nylon",
+            C: "11-0 nylon",
+            D: "12-0 nylon"
+          },
+          key: "B",
+          explanation: "Vessels measuring 1.0–2.0 mm in diameter are standardly repaired using 10-0 nylon microsutures (while 9-0 is typically used for >2 mm and 11-0 for <1 mm)."
+        },
+        {
+          id: 50,
+          q: "Loose adventitia can be peeled off up vessel with microforceps to a distance of ___ mm from anastomotic site:",
+          options: {
+            A: "1–2 mm",
+            B: "2–3 mm",
+            C: "3–4 mm",
+            D: "4–5 mm"
+          },
+          key: "B",
+          explanation: "Loose adventitia should be trimmed/stripped back approximately 2–3 mm from the cut vessel edges so it does not enter the lumen and trigger thrombosis."
+        },
+        {
+          id: 51,
+          q: "End to Side Anastomosis is considered classically when the vessel discrepancy is greater than:",
+          options: {
+            A: "2:1",
+            B: "3:1",
+            C: "4:1",
+            D: "5:1"
+          },
+          key: "A",
+          explanation: "End-to-side anastomosis is generally preferred when the vessel diameter discrepancy exceeds 2:1 (or 3:1 depending on technique, with >2:1 being the classic threshold)."
+        },
+        {
+          id: 52,
+          q: "Patient to be advised to stop smoking preoperatively for ___ weeks to reduce risk of complications:",
+          options: {
+            A: "2 weeks",
+            B: "3 weeks",
+            C: "4 weeks",
+            D: "6 weeks"
+          },
+          key: "C",
+          explanation: "Smoking cessation for at least 4 weeks preoperatively significantly decreases vasospasm, wound healing complications, and flap necrosis."
+        },
+        {
+          id: 53,
+          q: "Half life of heparin is:",
+          options: {
+            A: "90 min -  4 hours",
+            B: "1 - 5 hrs",
+            C: "6 hrs",
+            D: "8 hrs"
+          },
+          key: "A",
+          explanation: "Unfractionated heparin has a dose-dependent half-life, but in standard surgical references it is commonly cited as approximately 1.5–4 hours (with 4 hrs being the listed standard option)."
+        },
+        {
+          id: 54,
+          q: "Following muscles available for innervated free functioning muscle transfer EXCEPT:",
+          options: {
+            A: "Latissimus dorsi",
+            B: "Gracilis",
+            C: "Rectus femoris",
+            D: "Rectus abdominis"
+          },
+          key: "D",
+          explanation: "Gracilis, latissimus dorsi, and rectus femoris are classic functional innervated free muscle transfers; the rectus abdominis has a segmental nerve supply and is not used for single-pedicle innervated functional transfer."
+        },
+        {
+          id: 55,
+          q: "Microvascular surgery refers to the surgical coaptation of small vessels less than:",
+          options: {
+            A: "3 mm",
+            B: "4 mm",
+            C: "5 mm",
+            D: "6 mm"
+          },
+          key: "A",
+          explanation: "Microvascular surgery is traditionally defined as the surgical coaptation of small blood vessels less than 3 mm in diameter."
+        },
+        {
+          id: 56,
+          q: "Regarding prelamination of forehead flap, which is true:",
+          options: {
+            A: "Used for large defect",
+            B: "Used in young healthy patient",
+            C: "Used as a first option in salvage cases",
+            D: "Used to repair full thickness unilateral defect"
+          },
+          key: "D",
+          explanation: "Forehead flap prelamination is indicated to reconstruct complex, full-thickness unilateral nasal defects requiring internal lining, structural support, and external skin coverage. (Chapter 3, Page no. 85)"
+        },
+        {
+          id: 57,
+          q: "Currently the gold standard method of flap monitoring is:",
+          options: {
+            A: "Hand held doppler",
+            B: "Pulse oximetry",
+            C: "Clinical monitoring",
+            D: "Fluorescein dye mapping"
+          },
+          key: "C",
+          explanation: "Frequent clinical monitoring (evaluating flap color, turgor, warmth, capillary refill, and pinprick bleeding) remains the gold standard for free flap surveillance."
+        },
+        {
+          id: 58,
+          q: "Regarding use of tissue expansion for scalp reconstruction all are true EXCEPT:",
+          options: {
+            A: "Expanders are placed in sub-galeal plane",
+            B: "Incisions are placed in area of scalp that will be excised",
+            C: "Incisions are oriented perpendicular to the axis of expansion",
+            D: "Injection ports are typically remote to decrease the risk of expander colonization"
+          },
+          key: "C",
+          explanation: "Tissue expander incisions are placed parallel (not perpendicular) to the axis of expansion along the border of the lesion to be excised to prevent wound dehiscence and expander extrusion. (Chapter 2, Page 45)"
+        },
+        {
+          id: 59,
+          q: "Which of the following statement is false:",
+          options: {
+            A: "Ear development begins with the otic placode at 3 weeks of gestation",
+            B: "There are 6 auricular hillocks",
+            C: "Hillocks fuse together forming auricle at 9–10 weeks of",
+            D: "Hillocks are derived from 1st and second branchial arch"
+          },
+          key: "C",
+          explanation: "The six auricular hillocks of His fuse to form the recognizable auricle around 12 weeks (or 6–8 weeks for early fusion, making 9–10 weeks the intended false statement in the source text). (Chapter 4, Page 111)"
+        },
+        {
+          id: 60,
+          q: "Currently lymphatic drainage concept is propounded for",
+          options: {
+            A: "Alzheimer’s dementia",
+            B: "Vascular dementia",
+            C: "Vascular stroke",
+            D: "all of the above"
+          },
+          key: "D",
+          explanation: "A - ALZHEIMER'S DEMENTIA (Note: Listed as '60. D — A - ALZHEIMER'S DEMENTIA' in the source key; scored strictly as D)."
+        }
+      ];
+
+      // =========================================================================
+      // APPLICATION STATE
+      // =========================================================================
+      const OPTION_KEYS = ['A', 'B', 'C', 'D'];
+      const MAX_SCORE = QUESTIONS.length * 3; // 180
+      const EXAM_DURATION_SECONDS = 60 * 60;  // 1 Hour (3600s)
+
+      let state = {
+        currentIndex: 0,
+        answers: {},          // { [questionId]: 'A' | 'B' | 'C' | 'D' }
+        skipped: new Set(),   // Set of questionIds explicitly skipped
+        isSubmitted: false,
+        showLiveScore: false,
+        paletteOpen: false,
+        reviewFilter: 'all',  // 'all' | 'wrong' | 'correct' | 'skipped'
+        timerSecondsLeft: EXAM_DURATION_SECONDS,
+        timerRunning: false,
+        timerHidden: false,
+        timerIntervalId: null,
+        sessionStartTime: Date.now()
+      };
+
+      let activeModalConfirmAction = null;
+
+      // =========================================================================
+      // DOM REFERENCES
+      // =========================================================================
+      const els = {
+        quizHeaderControls: document.getElementById('quizHeaderControls'),
+        topProgressContainer: document.getElementById('topProgressContainer'),
+        topProgressBar: document.getElementById('topProgressBar'),
+        toggleLiveScoreBtn: document.getElementById('toggleLiveScoreBtn'),
+        liveScoreLabel: document.getElementById('liveScoreLabel'),
+        toggleTimerVisibilityBtn: document.getElementById('toggleTimerVisibilityBtn'),
+        timerDisplay: document.getElementById('timerDisplay'),
+        timerPlayPauseBtn: document.getElementById('timerPlayPauseBtn'),
+        togglePaletteBtn: document.getElementById('togglePaletteBtn'),
+        closePaletteBtn: document.getElementById('closePaletteBtn'),
+        headerSubmitBtn: document.getElementById('headerSubmitBtn'),
+
+        quizView: document.getElementById('quizView'),
+        paletteDrawer: document.getElementById('paletteDrawer'),
+        paletteGrid: document.getElementById('paletteGrid'),
+        questionCounterBadge: document.getElementById('questionCounterBadge'),
+        questionStatusBadge: document.getElementById('questionStatusBadge'),
+        attemptedCounterText: document.getElementById('attemptedCounterText'),
+        questionNumCircle: document.getElementById('questionNumCircle'),
+        questionText: document.getElementById('questionText'),
+        optionsContainer: document.getElementById('optionsContainer'),
+
+        feedbackBox: document.getElementById('feedbackBox'),
+        feedbackIcon: document.getElementById('feedbackIcon'),
+        feedbackTitle: document.getElementById('feedbackTitle'),
+        feedbackMarksPill: document.getElementById('feedbackMarksPill'),
+        feedbackKeyLine: document.getElementById('feedbackKeyLine'),
+        feedbackExplanationWrapper: document.getElementById('feedbackExplanationWrapper'),
+        feedbackExplanationText: document.getElementById('feedbackExplanationText'),
+
+        prevBtn: document.getElementById('prevBtn'),
+        skipBtn: document.getElementById('skipBtn'),
+        nextBtn: document.getElementById('nextBtn'),
+        nextBtnText: document.getElementById('nextBtnText'),
+        nextBtnIcon: document.getElementById('nextBtnIcon'),
+
+        resultsView: document.getElementById('resultsView'),
+        resFinalScore: document.getElementById('resFinalScore'),
+        resOverallPct: document.getElementById('resOverallPct'),
+        resTimeElapsed: document.getElementById('resTimeElapsed'),
+        barCorrect: document.getElementById('barCorrect'),
+        barWrong: document.getElementById('barWrong'),
+        barSkipped: document.getElementById('barSkipped'),
+        resCorrectCount: document.getElementById('resCorrectCount'),
+        resCorrectMarks: document.getElementById('resCorrectMarks'),
+        resWrongCount: document.getElementById('resWrongCount'),
+        resWrongMarks: document.getElementById('resWrongMarks'),
+        resSkippedCount: document.getElementById('resSkippedCount'),
+        resAccuracyPct: document.getElementById('resAccuracyPct'),
+        resAttemptedLabel: document.getElementById('resAttemptedLabel'),
+        resFormulaSummary: document.getElementById('resFormulaSummary'),
+        retakeExamBtn: document.getElementById('retakeExamBtn'),
+        reviewFilterTabs: document.getElementById('reviewFilterTabs'),
+        reviewListContainer: document.getElementById('reviewListContainer'),
+
+        modalOverlay: document.getElementById('modalOverlay'),
+        modalTitle: document.getElementById('modalTitle'),
+        modalMessage: document.getElementById('modalMessage'),
+        modalCancelBtn: document.getElementById('modalCancelBtn'),
+        modalConfirmBtn: document.getElementById('modalConfirmBtn')
+      };
+
+      // =========================================================================
+      // UTILITY HELPERS
+      // =========================================================================
+      /**
+       * Safely escapes HTML special characters so verbatim text renders accurately.
+       */
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      /**
+       * Calculates live or final scoring metrics strictly following +3 / -1 / 0 rules.
+       */
+      function calculateStats() {
+        let correct = 0;
+        let wrong = 0;
+        let skipped = 0;
+
+        for (const q of QUESTIONS) {
+          const userAns = state.answers[q.id];
+          if (!userAns) {
+            skipped++;
+          } else if (userAns === q.key) {
+            correct++;
+          } else {
+            wrong++;
+          }
+        }
+
+        const attempted = correct + wrong;
+        const positiveMarks = correct * 3;
+        const negativeMarks = wrong * 1;
+        const finalScore = positiveMarks - negativeMarks;
+        const overallPct = (finalScore / MAX_SCORE) * 100;
+        const accuracyPct = attempted > 0 ? (correct / attempted) * 100 : 0;
+
+        return {
+          correct,
+          wrong,
+          skipped,
+          attempted,
+          positiveMarks,
+          negativeMarks,
+          finalScore,
+          overallPct,
+          accuracyPct
+        };
+      }
+
+      /**
+       * Formats seconds as MM:SS.
+       */
+      function formatClock(totalSeconds) {
+        const clamped = Math.max(0, totalSeconds);
+        const mins = Math.floor(clamped / 60);
+        const secs = clamped % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      // =========================================================================
+      // TIMER LOGIC (60-MINUTE OPTIONAL / PAUSABLE EXAM TIMER)
+      // =========================================================================
+      function updateTimerUI() {
+        if (state.timerHidden) {
+          els.timerDisplay.textContent = 'Hidden';
+          els.timerDisplay.className = 'font-semibold text-slate-400';
+        } else {
+          els.timerDisplay.textContent = formatClock(state.timerSecondsLeft);
+          const isLow = state.timerSecondsLeft <= 300; // Last 5 mins warning
+          els.timerDisplay.className = `tabular-nums font-bold ${isLow ? 'text-rose-600' : 'text-slate-800'}`;
+        }
+        els.timerPlayPauseBtn.textContent = state.timerRunning ? 'Pause' : (state.timerSecondsLeft < EXAM_DURATION_SECONDS ? 'Resume' : 'Start');
+      }
+
+      function toggleTimerRunning() {
+        if (state.isSubmitted) return;
+        if (state.timerRunning) {
+          clearInterval(state.timerIntervalId);
+          state.timerIntervalId = null;
+          state.timerRunning = false;
+        } else {
+          if (state.timerSecondsLeft <= 0) {
+            state.timerSecondsLeft = EXAM_DURATION_SECONDS;
+          }
+          state.timerRunning = true;
+          state.timerIntervalId = setInterval(() => {
+            if (state.timerSecondsLeft > 0) {
+              state.timerSecondsLeft--;
+              updateTimerUI();
+              if (state.timerSecondsLeft === 0) {
+                clearInterval(state.timerIntervalId);
+                state.timerIntervalId = null;
+                state.timerRunning = false;
+                updateTimerUI();
+                openModal(
+                  'Time Up (60 Minutes Elapsed)',
+                  'Your 1-hour exam timer has finished. You can submit your exam now to calculate your final score, or continue reviewing your remaining questions.',
+                  'Submit Exam Now',
+                  'Keep Working',
+                  () => submitQuiz()
+                );
+              }
+            }
+          }, 1000);
+        }
+        updateTimerUI();
+      }
+
+      function stopTimer() {
+        if (state.timerIntervalId) {
+          clearInterval(state.timerIntervalId);
+          state.timerIntervalId = null;
+        }
+        state.timerRunning = false;
+      }
+
+      // =========================================================================
+      // MODAL DIALOG CONTROLLER
+      // =========================================================================
+      function openModal(title, message, confirmLabel, cancelLabel, onConfirm) {
+        els.modalTitle.textContent = title;
+        els.modalMessage.textContent = message;
+        els.modalConfirmBtn.textContent = confirmLabel || 'Confirm';
+        els.modalCancelBtn.textContent = cancelLabel || 'Cancel';
+        activeModalConfirmAction = onConfirm;
+        els.modalOverlay.classList.remove('hidden');
+      }
+
+      function closeModal() {
+        els.modalOverlay.classList.add('hidden');
+        activeModalConfirmAction = null;
+      }
+
+      // =========================================================================
+      // RENDERING: HEADER, PALETTE & CURRENT QUESTION
+      // =========================================================================
+      function updateHeaderStatus() {
+        const stats = calculateStats();
+
+        // Update progress bar based on current question position and answered progress
+        const progressPct = ((state.currentIndex + 1) / QUESTIONS.length) * 100;
+        els.topProgressBar.style.width = `${progressPct}%`;
+        els.attemptedCounterText.textContent = `${stats.attempted} / ${QUESTIONS.length} Answered`;
+
+        // Update Live Score Pill
+        if (state.showLiveScore) {
+          els.liveScoreLabel.textContent = `Score: ${stats.finalScore} / ${MAX_SCORE}`;
+          els.toggleLiveScoreBtn.classList.add('border-indigo-300', 'bg-indigo-50', 'text-indigo-900');
+          els.toggleLiveScoreBtn.classList.remove('border-slate-200', 'bg-slate-50', 'text-slate-700');
+        } else {
+          els.liveScoreLabel.textContent = 'Score: Hidden';
+          els.toggleLiveScoreBtn.classList.remove('border-indigo-300', 'bg-indigo-50', 'text-indigo-900');
+          els.toggleLiveScoreBtn.classList.add('border-slate-200', 'bg-slate-50', 'text-slate-700');
+        }
+      }
+
+      function renderPalette() {
+        const frag = document.createDocumentFragment();
+        QUESTIONS.forEach((q, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = q.id;
+          btn.dataset.index = idx;
+
+          const userAns = state.answers[q.id];
+          const isCurrent = idx === state.currentIndex;
+          let colorClasses = 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+
+          if (userAns) {
+            if (userAns === q.key) {
+              colorClasses = 'bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600';
+            } else {
+              colorClasses = 'bg-rose-500 text-white border-rose-600 hover:bg-rose-600';
+            }
+          } else if (state.skipped.has(q.id)) {
+            colorClasses = 'bg-amber-50 text-amber-800 border-amber-400 hover:bg-amber-100';
+          }
+
+          const ringClass = isCurrent ? 'ring-2 ring-offset-1 ring-indigo-600 font-extrabold' : 'font-semibold';
+          btn.className = `h-9 rounded-lg border text-xs transition-all flex items-center justify-center ${colorClasses} ${ringClass}`;
+          btn.setAttribute('aria-label', `Go to question ${q.id}`);
+
+          btn.addEventListener('click', () => {
+            state.currentIndex = idx;
+            renderCurrentQuestion();
+            renderPalette();
+          });
+
+          frag.appendChild(btn);
+        });
+
+        els.paletteGrid.innerHTML = '';
+        els.paletteGrid.appendChild(frag);
+      }
+
+      function renderCurrentQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        const userAns = state.answers[q.id];
+        const isLocked = Boolean(userAns);
+        const isCorrect = isLocked && userAns === q.key;
+
+        // Badges & Stem
+        els.questionCounterBadge.textContent = `Question ${q.id} of ${QUESTIONS.length}`;
+        els.questionNumCircle.textContent = q.id;
+        els.questionText.textContent = q.q;
+
+        // Status Pill
+        if (isLocked) {
+          if (isCorrect) {
+            els.questionStatusBadge.textContent = 'Correct (+3)';
+            els.questionStatusBadge.className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+          } else {
+            els.questionStatusBadge.textContent = 'Wrong (−1)';
+            els.questionStatusBadge.className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
+          }
+        } else if (state.skipped.has(q.id)) {
+          els.questionStatusBadge.textContent = 'Skipped (0)';
+          els.questionStatusBadge.className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
+        } else {
+          els.questionStatusBadge.textContent = 'Unanswered';
+          els.questionStatusBadge.className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600';
+        }
+
+        // Render Options A, B, C, D in exact order
+        els.optionsContainer.innerHTML = '';
+        OPTION_KEYS.forEach((optKey) => {
+          const optText = q.options[optKey];
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.disabled = isLocked;
+
+          let cardClass = 'border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-800 cursor-pointer';
+          let badgeClass = 'bg-slate-100 text-slate-700 border-slate-200 group-hover:bg-indigo-100 group-hover:text-indigo-900 group-hover:border-indigo-200';
+          let rightIndicatorHtml = '';
+
+          if (isLocked) {
+            if (optKey === q.key) {
+              // Official correct option -> Emerald green
+              cardClass = 'border-emerald-500 bg-emerald-50/90 text-emerald-950 ring-1 ring-emerald-500 cursor-default';
+              badgeClass = 'bg-emerald-600 text-white border-emerald-600';
+              rightIndicatorHtml = `
+                <span class="shrink-0 inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  ${userAns === optKey ? 'Your Answer' : 'Correct Key'}
+                </span>
+              `;
+            } else if (optKey === userAns && userAns !== q.key) {
+              // Wrong user selection -> Rose red
+              cardClass = 'border-rose-500 bg-rose-50/90 text-rose-950 ring-1 ring-rose-500 cursor-default';
+              badgeClass = 'bg-rose-600 text-white border-rose-600';
+              rightIndicatorHtml = `
+                <span class="shrink-0 inline-flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-100 px-2.5 py-1 rounded-full">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Your Answer
+                </span>
+              `;
+            } else {
+              // Unselected neutral option after locking
+              cardClass = 'border-slate-200 bg-slate-50/60 text-slate-400 opacity-75 cursor-default';
+              badgeClass = 'bg-slate-100 text-slate-400 border-slate-200';
+            }
+          }
+
+          btn.className = `group w-full text-left p-3.5 sm:p-4 rounded-xl border-2 transition-all flex items-center justify-between gap-3 ${cardClass}`;
+          btn.innerHTML = `
+            <div class="flex items-start sm:items-center gap-3.5 min-w-0">
+              <span class="shrink-0 w-8 h-8 rounded-lg border text-sm font-bold flex items-center justify-center transition-colors ${badgeClass}">
+                ${optKey}
+              </span>
+              <span class="text-sm sm:text-[15px] font-medium leading-snug break-words">${escapeHtml(optText)}</span>
+            </div>
+            ${rightIndicatorHtml}
+          `;
+
+          if (!isLocked) {
+            btn.addEventListener('click', () => handleSelectOption(optKey));
+          }
+
+          els.optionsContainer.appendChild(btn);
+        });
+
+        // Immediate Feedback & Official Key Note
+        if (isLocked) {
+          els.feedbackBox.classList.remove('hidden');
+          if (isCorrect) {
+            els.feedbackBox.className = 'mt-6 rounded-2xl p-4 sm:p-5 border border-emerald-200 bg-emerald-50 text-emerald-950';
+            els.feedbackIcon.innerHTML = `
+              <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            `;
+            els.feedbackTitle.textContent = 'Correct!';
+            els.feedbackMarksPill.textContent = '+3 Marks';
+            els.feedbackMarksPill.className = 'px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white';
+            els.feedbackKeyLine.textContent = `Official Key: ${q.key}) ${q.options[q.key]}`;
+            els.feedbackKeyLine.className = 'text-xs sm:text-sm font-medium text-emerald-800 mt-1';
+            els.feedbackExplanationWrapper.className = 'mt-3 pt-3 border-t border-emerald-200/80 text-xs sm:text-sm leading-relaxed text-emerald-900';
+          } else {
+            els.feedbackBox.className = 'mt-6 rounded-2xl p-4 sm:p-5 border border-rose-200 bg-rose-50 text-rose-950';
+            els.feedbackIcon.innerHTML = `
+              <div class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+            `;
+            els.feedbackTitle.textContent = 'Wrong!';
+            els.feedbackMarksPill.textContent = '−1 Mark';
+            els.feedbackMarksPill.className = 'px-2.5 py-1 rounded-full text-xs font-extrabold bg-rose-600 text-white';
+            els.feedbackKeyLine.textContent = `Your Answer: ${userAns}  •  Official Key: ${q.key}) ${q.options[q.key]}`;
+            els.feedbackKeyLine.className = 'text-xs sm:text-sm font-semibold text-rose-800 mt-1';
+            els.feedbackExplanationWrapper.className = 'mt-3 pt-3 border-t border-rose-200/80 text-xs sm:text-sm leading-relaxed text-rose-900';
+          }
+
+          if (q.explanation && q.explanation.trim().length > 0) {
+            els.feedbackExplanationWrapper.classList.remove('hidden');
+            els.feedbackExplanationText.textContent = q.explanation;
+          } else {
+            els.feedbackExplanationWrapper.classList.add('hidden');
+          }
+        } else {
+          els.feedbackBox.classList.add('hidden');
+        }
+
+        // Navigation Buttons State
+        els.prevBtn.disabled = state.currentIndex === 0;
+
+        // Hide Skip button if question is already locked
+        if (isLocked) {
+          els.skipBtn.classList.add('hidden');
+        } else {
+          els.skipBtn.classList.remove('hidden');
+        }
+
+        // Last question (Q60) switches Next button to Submit Quiz
+        const isLastQuestion = state.currentIndex === QUESTIONS.length - 1;
+        if (isLastQuestion) {
+          els.nextBtnText.textContent = 'Submit Quiz';
+          els.nextBtn.className = 'inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm transition-colors';
+        } else {
+          els.nextBtnText.textContent = 'Next Question';
+          els.nextBtn.className = 'inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-900 text-white hover:bg-indigo-800 shadow-sm transition-colors';
+        }
+
+        updateHeaderStatus();
+      }
+
+      // =========================================================================
+      // USER INTERACTIONS (ANSWER, SKIP, NAVIGATE, SUBMIT)
+      // =========================================================================
+      function handleSelectOption(optKey) {
+        const q = QUESTIONS[state.currentIndex];
+        if (state.answers[q.id] || state.isSubmitted) return;
+
+        // Lock answer immediately
+        state.answers[q.id] = optKey;
+        state.skipped.delete(q.id);
+
+        renderCurrentQuestion();
+        renderPalette();
+      }
+
+      function handleSkipQuestion() {
+        const q = QUESTIONS[state.currentIndex];
+        if (!state.answers[q.id]) {
+          state.skipped.add(q.id);
+        }
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          state.currentIndex++;
+          renderCurrentQuestion();
+          renderPalette();
+        } else {
+          renderCurrentQuestion();
+          renderPalette();
+          requestSubmitQuiz();
+        }
+      }
+
+      function handleNext() {
+        if (state.currentIndex < QUESTIONS.length - 1) {
+          state.currentIndex++;
+          renderCurrentQuestion();
+          renderPalette();
+        } else {
+          requestSubmitQuiz();
+        }
+      }
+
+      function handlePrevious() {
+        if (state.currentIndex > 0) {
+          state.currentIndex--;
+          renderCurrentQuestion();
+          renderPalette();
+        }
+      }
+
+      function requestSubmitQuiz() {
+        const stats = calculateStats();
+        if (stats.skipped > 0) {
+          openModal(
+            'Submit Exam with Unanswered Questions?',
+            `You have answered ${stats.attempted} of ${QUESTIONS.length} questions. ${stats.skipped} question${stats.skipped === 1 ? ' is' : 's are'} still unanswered/skipped (0 marks each). Are you ready to submit and view your final score?`,
+            'Submit & View Score',
+            'Return to Exam',
+            () => submitQuiz()
+          );
+        } else {
+          submitQuiz();
+        }
+      }
+
+      // =========================================================================
+      // RESULTS SCREEN & REVIEW RENDERING
+      // =========================================================================
+      function submitQuiz() {
+        stopTimer();
+        state.isSubmitted = true;
+        state.reviewFilter = 'all';
+
+        // Hide Quiz View & Header Quiz Controls
+        els.quizView.classList.add('hidden');
+        els.quizHeaderControls.classList.add('hidden');
+        els.topProgressContainer.classList.add('hidden');
+        els.resultsView.classList.remove('hidden');
+
+        const stats = calculateStats();
+
+        // Populate Final Score Hero
+        els.resFinalScore.textContent = stats.finalScore;
+        els.resOverallPct.textContent = `${stats.overallPct.toFixed(1)}% of 180`;
+
+        // Time Elapsed display
+        const elapsedSec = Math.floor((Date.now() - state.sessionStartTime) / 1000);
+        const mins = Math.floor(elapsedSec / 60);
+        const secs = elapsedSec % 60;
+        els.resTimeElapsed.textContent = `Time Taken: ${mins}m ${secs}s`;
+
+        // Stacked Progress Bar widths
+        const total = QUESTIONS.length;
+        els.barCorrect.style.width = `${(stats.correct / total) * 100}%`;
+        els.barWrong.style.width = `${(stats.wrong / total) * 100}%`;
+        els.barSkipped.style.width = `${(stats.skipped / total) * 100}%`;
+
+        // 4 Split-up Stat Cards
+        els.resCorrectCount.textContent = stats.correct;
+        els.resCorrectMarks.textContent = `+${stats.positiveMarks} marks (${stats.correct} × 3)`;
+
+        els.resWrongCount.textContent = stats.wrong;
+        els.resWrongMarks.textContent = stats.negativeMarks > 0
+          ? `−${stats.negativeMarks} marks (${stats.wrong} × −1)`
+          : '0 marks';
+
+        els.resSkippedCount.textContent = stats.skipped;
+
+        els.resAccuracyPct.textContent = `${stats.accuracyPct.toFixed(1)}%`;
+        els.resAttemptedLabel.textContent = `${stats.attempted} of ${total} attempted`;
+
+        // Explicit Formula Breakdown
+        els.resFormulaSummary.innerHTML = `
+          <span class="font-bold text-slate-800">Score Formula:</span>
+          <span class="text-emerald-700 font-semibold">(${stats.correct} × 3 = +${stats.positiveMarks})</span>
+          <span class="mx-1 text-slate-400">−</span>
+          <span class="text-rose-700 font-semibold">(${stats.wrong} × 1 = ${stats.negativeMarks})</span>
+          <span class="mx-1 text-slate-400">=</span>
+          <span class="font-extrabold text-indigo-950">${stats.finalScore} / ${MAX_SCORE}</span>
+        `;
+
+        renderReviewFilterTabs(stats);
+        renderReviewList();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function renderReviewFilterTabs(stats) {
+        const tabs = [
+          { key: 'all', label: `All (${QUESTIONS.length})` },
+          { key: 'wrong', label: `Wrong (${stats.wrong})` },
+          { key: 'correct', label: `Correct (${stats.correct})` },
+          { key: 'skipped', label: `Skipped (${stats.skipped})` }
+        ];
+
+        els.reviewFilterTabs.innerHTML = '';
+        tabs.forEach((tab) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isActive = state.reviewFilter === tab.key;
+          btn.className = isActive
+            ? 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-900 text-white shadow-xs transition-colors'
+            : 'px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors';
+          btn.textContent = tab.label;
+
+          btn.addEventListener('click', () => {
+            state.reviewFilter = tab.key;
+            renderReviewFilterTabs(stats);
+            renderReviewList();
+          });
+
+          els.reviewFilterTabs.appendChild(btn);
+        });
+      }
+
+      function renderReviewList() {
+        const filtered = QUESTIONS.filter((q) => {
+          const userAns = state.answers[q.id];
+          if (state.reviewFilter === 'all') return true;
+          if (state.reviewFilter === 'correct') return userAns && userAns === q.key;
+          if (state.reviewFilter === 'wrong') return userAns && userAns !== q.key;
+          if (state.reviewFilter === 'skipped') return !userAns;
+          return true;
+        });
+
+        els.reviewListContainer.innerHTML = '';
+
+        if (filtered.length === 0) {
+          els.reviewListContainer.innerHTML = `
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500 text-sm font-medium">
+              No questions match this filter.
+            </div>
+          `;
+          return;
+        }
+
+        const frag = document.createDocumentFragment();
+        filtered.forEach((q) => {
+          const userAns = state.answers[q.id];
+          const isSkipped = !userAns;
+          const isCorrect = !isSkipped && userAns === q.key;
+
+          let statusBadge = '';
+          let borderAccent = 'border-slate-200';
+
+          if (isCorrect) {
+            statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">+3 Marks &bull; Correct</span>`;
+            borderAccent = 'border-l-4 border-l-emerald-500 border-slate-200';
+          } else if (isSkipped) {
+            statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">0 Marks &bull; Skipped</span>`;
+            borderAccent = 'border-l-4 border-l-slate-300 border-slate-200';
+          } else {
+            statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-800">−1 Mark &bull; Wrong</span>`;
+            borderAccent = 'border-l-4 border-l-rose-500 border-slate-200';
+          }
+
+          const card = document.createElement('article');
+          card.className = `bg-white rounded-2xl border ${borderAccent} shadow-xs p-5 space-y-3.5`;
+
+          // Build User Answer vs Official Key comparison
+          const userAnsHtml = isSkipped
+            ? `<div class="text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-slate-600"><span class="font-bold text-slate-700">Your Answer:</span> Skipped / Unattempted</div>`
+            : isCorrect
+              ? `<div class="text-xs sm:text-sm rounded-xl bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 text-emerald-900"><span class="font-bold">Your Answer:</span> ${userAns}) ${escapeHtml(q.options[userAns])}</div>`
+              : `<div class="text-xs sm:text-sm rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-rose-900"><span class="font-bold">Your Answer:</span> ${userAns}) ${escapeHtml(q.options[userAns])}</div>`;
+
+          const officialKeyHtml = `
+            <div class="text-xs sm:text-sm rounded-xl bg-emerald-50/70 border border-emerald-200 px-3.5 py-2.5 text-emerald-950">
+              <span class="font-bold text-emerald-800">Official Key:</span> ${q.key}) ${escapeHtml(q.options[q.key])}
+            </div>
+          `;
+
+          const explanationHtml = q.explanation && q.explanation.trim().length > 0
+            ? `<div class="text-xs sm:text-sm text-slate-700 bg-indigo-50/50 border border-indigo-100 rounded-xl px-3.5 py-2.5 leading-relaxed">
+                 <span class="font-bold text-indigo-900">Key Note:</span> ${escapeHtml(q.explanation)}
+               </div>`
+            : '';
+
+          card.innerHTML = `
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-900">Question ${q.id}</span>
+              ${statusBadge}
+            </div>
+            <p class="text-sm sm:text-base font-semibold text-slate-900 leading-snug">${escapeHtml(q.q)}</p>
+            <div class="grid grid-cols-1 ${isCorrect ? '' : 'sm:grid-cols-2'} gap-2.5">
+              ${userAnsHtml}
+              ${isCorrect ? '' : officialKeyHtml}
+            </div>
+            ${explanationHtml}
+          `;
+
+          frag.appendChild(card);
+        });
+
+        els.reviewListContainer.appendChild(frag);
+      }
+
+      // =========================================================================
+      // RETAKE / RESET EXAM
+      // =========================================================================
+      function retakeExam() {
+        stopTimer();
+        state = {
+          currentIndex: 0,
+          answers: {},
+          skipped: new Set(),
+          isSubmitted: false,
+          showLiveScore: state.showLiveScore,
+          paletteOpen: false,
+          reviewFilter: 'all',
+          timerSecondsLeft: EXAM_DURATION_SECONDS,
+          timerRunning: false,
+          timerHidden: state.timerHidden,
+          timerIntervalId: null,
+          sessionStartTime: Date.now()
+        };
+
+        els.resultsView.classList.add('hidden');
+        els.quizView.classList.remove('hidden');
+        els.quizHeaderControls.classList.remove('hidden');
+        els.topProgressContainer.classList.remove('hidden');
+        els.paletteDrawer.classList.add('hidden');
+
+        updateTimerUI();
+        renderCurrentQuestion();
+        renderPalette();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // =========================================================================
+      // EVENT LISTENERS & KEYBOARD SHORTCUTS
+      // =========================================================================
+      els.prevBtn.addEventListener('click', handlePrevious);
+      els.skipBtn.addEventListener('click', handleSkipQuestion);
+      els.nextBtn.addEventListener('click', handleNext);
+      els.headerSubmitBtn.addEventListener('click', requestSubmitQuiz);
+      els.retakeExamBtn.addEventListener('click', retakeExam);
+
+      els.toggleLiveScoreBtn.addEventListener('click', () => {
+        state.showLiveScore = !state.showLiveScore;
+        updateHeaderStatus();
+      });
+
+      els.toggleTimerVisibilityBtn.addEventListener('click', () => {
+        state.timerHidden = !state.timerHidden;
+        updateTimerUI();
+      });
+
+      els.timerPlayPauseBtn.addEventListener('click', toggleTimerRunning);
+
+      els.togglePaletteBtn.addEventListener('click', () => {
+        state.paletteOpen = !state.paletteOpen;
+        els.paletteDrawer.classList.toggle('hidden', !state.paletteOpen);
+        if (state.paletteOpen) renderPalette();
+      });
+
+      els.closePaletteBtn.addEventListener('click', () => {
+        state.paletteOpen = false;
+        els.paletteDrawer.classList.add('hidden');
+      });
+
+      els.modalCancelBtn.addEventListener('click', closeModal);
+      els.modalConfirmBtn.addEventListener('click', () => {
+        const action = activeModalConfirmAction;
+        closeModal();
+        if (typeof action === 'function') action();
+      });
+
+      // Click outside modal card closes it
+      els.modalOverlay.addEventListener('click', (e) => {
+        if (e.target === els.modalOverlay) closeModal();
+      });
+
+      // Keyboard Support (A/B/C/D to answer, Enter/ArrowRight for Next, ArrowLeft for Previous, Escape for Modal/Palette)
+      document.addEventListener('keydown', (e) => {
+        const modalOpen = !els.modalOverlay.classList.contains('hidden');
+
+        if (e.key === 'Escape') {
+          if (modalOpen) {
+            closeModal();
+          } else if (state.paletteOpen) {
+            state.paletteOpen = false;
+            els.paletteDrawer.classList.add('hidden');
+          }
+          return;
+        }
+
+        if (state.isSubmitted || modalOpen) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+        const keyUpper = e.key.toUpperCase();
+        if (OPTION_KEYS.includes(keyUpper)) {
+          const q = QUESTIONS[state.currentIndex];
+          if (!state.answers[q.id]) {
+            e.preventDefault();
+            handleSelectOption(keyUpper);
+          }
+        } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+          // Avoid double-triggering if a button currently has focus on Enter
+          if (e.key === 'Enter' && document.activeElement && document.activeElement.tagName === 'BUTTON') {
+            return;
+          }
+          e.preventDefault();
+          handleNext();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          handlePrevious();
+        }
+      });
+
+      // =========================================================================
+      // INITIALIZE APPLICATION
+      // =========================================================================
+      updateTimerUI();
+      renderCurrentQuestion();
+      renderPalette();
+    })();
+  </script>
+</body>
+</html>
